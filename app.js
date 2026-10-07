@@ -1,8 +1,10 @@
 const soundToggle = document.querySelector("#sound-toggle");
+const heartWrap = document.querySelector(".heart-wrap");
 
 let audioContext = null;
 let soundEnabled = false;
 let heartbeatTimer = null;
+let interactionTimer = null;
 
 const BEAT_INTERVAL_MS = 1620;
 const SECOND_BEAT_DELAY_MS = 230;
@@ -77,8 +79,8 @@ function playThump(startTime, frequency, gainValue, duration) {
   noise.stop(startTime + duration + 0.01);
 }
 
-function playHeartbeat() {
-  if (!soundEnabled || !audioContext) {
+function playHeartbeat(force = false) {
+  if ((!soundEnabled && !force) || !audioContext) {
     return;
   }
 
@@ -118,6 +120,25 @@ function stopHeartbeatSound() {
   }
 }
 
+function triggerHeartInteraction() {
+  heartWrap.classList.remove("interaction-pulse");
+  void heartWrap.offsetWidth;
+  heartWrap.classList.add("interaction-pulse");
+
+  if (interactionTimer !== null) {
+    window.clearTimeout(interactionTimer);
+  }
+
+  interactionTimer = window.setTimeout(() => {
+    heartWrap.classList.remove("interaction-pulse");
+    interactionTimer = null;
+  }, 500);
+
+  if (soundEnabled && audioContext) {
+    playHeartbeat();
+  }
+}
+
 soundToggle.addEventListener("click", () => {
   if (soundEnabled) {
     stopHeartbeatSound();
@@ -127,9 +148,28 @@ soundToggle.addEventListener("click", () => {
   startHeartbeatSound();
 });
 
+heartWrap.addEventListener("click", (event) => {
+  if (event.detail !== 0) {
+    triggerHeartInteraction();
+  }
+});
+
+heartWrap.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") {
+    return;
+  }
+
+  event.preventDefault();
+  triggerHeartInteraction();
+});
+
 window.addEventListener("pagehide", () => {
   if (heartbeatTimer !== null) {
     window.clearInterval(heartbeatTimer);
+  }
+
+  if (interactionTimer !== null) {
+    window.clearTimeout(interactionTimer);
   }
 
   if (audioContext && audioContext.state !== "closed") {
