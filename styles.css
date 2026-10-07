@@ -50,6 +50,9 @@ button {
   opacity: .85;
   transform: translateY(1%);
   pointer-events: none;
+  animation: ambient-breath 1.62s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform, opacity;
 }
 
 .heart-wrap {
@@ -67,6 +70,18 @@ button {
   width: 100%;
   height: auto;
   overflow: visible;
+}
+
+.heart-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: glow-heartbeat 1.62s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.traveling-highlight {
+  mix-blend-mode: screen;
+  filter: blur(1px);
 }
 
 .heart-wrap::after {
@@ -144,6 +159,62 @@ button {
   }
 }
 
+@keyframes glow-heartbeat {
+  0%,
+  100% {
+    opacity: .48;
+    transform: scale(1);
+  }
+
+  7% {
+    opacity: .7;
+    transform: scale(1.035);
+  }
+
+  13% {
+    opacity: .5;
+    transform: scale(1);
+  }
+
+  20% {
+    opacity: .78;
+    transform: scale(1.06);
+  }
+
+  29% {
+    opacity: .5;
+    transform: scale(1);
+  }
+}
+
+@keyframes ambient-breath {
+  0%,
+  100% {
+    opacity: .72;
+    transform: translateY(1%) scale(1);
+  }
+
+  7% {
+    opacity: .9;
+    transform: translateY(1%) scale(1.055);
+  }
+
+  13% {
+    opacity: .74;
+    transform: translateY(1%) scale(1);
+  }
+
+  20% {
+    opacity: .94;
+    transform: translateY(1%) scale(1.075);
+  }
+
+  29% {
+    opacity: .74;
+    transform: translateY(1%) scale(1);
+  }
+}
+
 @media (max-width: 600px) {
   .heart-wrap {
     width: min(94vmin, 620px);
@@ -155,8 +226,14 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .heart-wrap {
+  .heart-wrap,
+  .ambient-glow,
+  .heart-glow {
     animation: none;
+  }
+
+  .traveling-highlight {
+    display: none;
   }
 
   .sound-toggle {
