@@ -1,3 +1,4 @@
+const heartStage = document.querySelector(".heart-stage");
 const soundToggle = document.querySelector("#sound-toggle");
 const heartWrap = document.querySelector(".heart-wrap");
 
@@ -7,6 +8,11 @@ let heartbeatTimer = null;
 let interactionTimer = null;
 
 const BEAT_INTERVAL_MS = 1620;
+
+requestAnimationFrame(() => {
+  heartStage.classList.add("is-ready");
+  heartStage.setAttribute("aria-busy", "false");
+});
 const SECOND_BEAT_DELAY_MS = 230;
 
 function getAudioContext() {
