@@ -38,6 +38,12 @@ button {
   display: grid;
   place-items: center;
   isolation: isolate;
+  opacity: 0;
+  transition: opacity .9s cubic-bezier(.22,.61,.36,1);
+}
+
+.heart-stage.is-ready {
+  opacity: 1;
 }
 
 .ambient-glow {
@@ -50,7 +56,7 @@ button {
   opacity: .85;
   transform: translateY(1%);
   pointer-events: none;
-  animation: ambient-breath 1.62s ease-in-out infinite;
+  animation: ambient-breath 1.62s ease-in-out .72s infinite;
   transform-origin: center;
   will-change: transform, opacity;
 }
@@ -90,7 +96,7 @@ button {
   width: min(90vmin, 980px);
   max-width: 92vw;
   z-index: 1;
-  animation: heart-beat 1.62s ease-in-out infinite;
+  animation: heart-beat 1.62s ease-in-out .88s infinite;
   transform-origin: center;
   will-change: transform, filter;
 }
@@ -302,6 +308,11 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .heart-stage {
+    opacity: 1;
+    transition: none;
+  }
+
   .heart-wrap,
   .ambient-glow,
   .heart-glow,
