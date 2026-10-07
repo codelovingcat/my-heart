@@ -114,6 +114,10 @@ button {
   filter: blur(1px);
 }
 
+.heart-wrap.interaction-pulse .heart-svg {
+  animation: interaction-pulse .46s cubic-bezier(.16,.84,.34,1);
+}
+
 .heart-wrap::after {
   content: "";
   position: absolute;
@@ -186,6 +190,27 @@ button {
 
   29% {
     transform: scale(1);
+  }
+}
+
+@keyframes interaction-pulse {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+
+  28% {
+    transform: scale(1.045);
+    filter: brightness(1.08) saturate(1.08);
+  }
+
+  52% {
+    transform: scale(1.015);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
   }
 }
 
@@ -281,6 +306,7 @@ button {
   .ambient-glow,
   .heart-glow,
   .light-particles span {
+
     animation: none;
   }
 
