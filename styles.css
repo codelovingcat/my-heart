@@ -55,6 +55,36 @@ button {
   will-change: transform, opacity;
 }
 
+.light-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.light-particles span {
+  position: absolute;
+  display: block;
+  width: clamp(3px, .45vmin, 6px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 225, 236, .72);
+  box-shadow: 0 0 12px rgba(255, 78, 132, .42);
+  opacity: 0;
+  animation: float-light linear infinite;
+}
+
+.light-particles span:nth-child(1) { left: 18%; top: 58%; animation-duration: 7s; animation-delay: -1s; }
+.light-particles span:nth-child(2) { left: 28%; top: 31%; animation-duration: 9s; animation-delay: -6s; }
+.light-particles span:nth-child(3) { left: 38%; top: 68%; animation-duration: 8s; animation-delay: -3s; }
+.light-particles span:nth-child(4) { left: 61%; top: 30%; animation-duration: 10s; animation-delay: -8s; }
+.light-particles span:nth-child(5) { left: 71%; top: 63%; animation-duration: 8.5s; animation-delay: -2s; }
+.light-particles span:nth-child(6) { left: 79%; top: 44%; animation-duration: 11s; animation-delay: -9s; }
+.light-particles span:nth-child(7) { left: 12%; top: 39%; animation-duration: 10.5s; animation-delay: -5s; }
+.light-particles span:nth-child(8) { left: 88%; top: 58%; animation-duration: 9.5s; animation-delay: -7s; }
+.light-particles span:nth-child(9) { left: 52%; top: 18%; animation-duration: 12s; animation-delay: -10s; }
+.light-particles span:nth-child(10) { left: 47%; top: 82%; animation-duration: 8s; animation-delay: -4s; }
+
 .heart-wrap {
   position: relative;
   width: min(90vmin, 980px);
@@ -159,6 +189,27 @@ button {
   }
 }
 
+@keyframes float-light {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(.72);
+  }
+
+  18% {
+    opacity: .18;
+  }
+
+  50% {
+    opacity: .72;
+    transform: translate3d(12px, -28px, 0) scale(1);
+  }
+
+  82% {
+    opacity: .15;
+  }
+}
+
 @keyframes glow-heartbeat {
   0%,
   100% {
@@ -228,7 +279,8 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .heart-wrap,
   .ambient-glow,
-  .heart-glow {
+  .heart-glow,
+  .light-particles span {
     animation: none;
   }
 
