@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09040b">
+  <meta name="description" content="My Heart — a luminous, gently beating heart.">
+  <title>My Heart</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="heart-stage">
+    <div class="ambient-glow" aria-hidden="true"></div>
+
+    <div class="heart-wrap" aria-label="A gently beating heart">
+      <svg class="heart-svg" viewBox="0 0 200 190" role="img" aria-labelledby="heart-title heart-desc">
+        <title id="heart-title">My Heart</title>
+        <desc id="heart-desc">A large luminous red heart with layered highlights and shadows.</desc>
+        <defs>
+          <linearGradient id="heart-gradient" x1="24%" y1="8%" x2="78%" y2="100%">
+            <stop offset="0%" stop-color="#ffb2c7"/>
+            <stop offset="16%" stop-color="#ff6f98"/>
+            <stop offset="48%" stop-color="#ef285f"/>
+            <stop offset="76%" stop-color="#b90942"/>
+            <stop offset="100%" stop-color="#69052d"/>
+          </linearGradient>
+
+          <radialGradient id="heart-light" cx="34%" cy="24%" r="62%">
+            <stop offset="0%" stop-color="#fff8fb" stop-opacity=".9"/>
+            <stop offset="25%" stop-color="#ffd8e4" stop-opacity=".33"/>
+            <stop offset="62%" stop-color="#ff6b97" stop-opacity=".05"/>
+            <stop offset="100%" stop-color="#ff4a83" stop-opacity="0"/>
+          </radialGradient>
+
+          <linearGradient id="heart-shadow" x1="50%" y1="40%" x2="50%" y2="100%">
+            <stop offset="0%" stop-color="#7a0732" stop-opacity="0"/>
+            <stop offset="70%" stop-color="#43021d" stop-opacity=".26"/>
+            <stop offset="100%" stop-color="#1b000c" stop-opacity=".64"/>
+          </linearGradient>
+
+          <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="7"/>
+          </filter>
+
+          <filter id="deep-shadow" x="-50%" y="-50%" width="200%" height="220%">
+            <feDropShadow dx="0" dy="15" stdDeviation="12" flood-color="#ff1d65" flood-opacity=".3"/>
+          </filter>
+
+          <clipPath id="heart-clip">
+            <path d="M100 180C88 165 20 118 20 62C20 30 45 10 72 10C87 10 96 18 100 31C104 18 113 10 128 10C155 10 180 30 180 62C180 118 112 165 100 180Z"/>
+          </clipPath>
+        </defs>
+
+        <path
+          class="heart-glow"
+          d="M100 180C88 165 20 118 20 62C20 30 45 10 72 10C87 10 96 18 100 31C104 18 113 10 128 10C155 10 180 30 180 62C180 118 112 165 100 180Z"
+          fill="#ff2d69"
+          opacity=".55"
+          filter="url(#soft-glow)"
+        />
+
+        <g filter="url(#deep-shadow)">
+          <path
+            class="heart-body"
+            d="M100 180C88 165 20 118 20 62C20 30 45 10 72 10C87 10 96 18 100 31C104 18 113 10 128 10C155 10 180 30 180 62C180 118 112 165 100 180Z"
+            fill="url(#heart-gradient)"
+          />
+
+          <path
+            d="M100 180C88 165 20 118 20 62C20 30 45 10 72 10C87 10 96 18 100 31C104 18 113 10 128 10C155 10 180 30 180 62C180 118 112 165 100 180Z"
+            fill="url(#heart-light)"
+          />
+
+          <g clip-path="url(#heart-clip)">
+            <ellipse cx="62" cy="48" rx="48" ry="30" fill="#ffffff" opacity=".12" transform="rotate(-18 62 48)"/>
+            <ellipse cx="146" cy="118" rx="62" ry="46" fill="#350014" opacity=".16" transform="rotate(-16 146 118)"/>
+            <path
+              d="M35 64C42 34 74 22 97 43"
+              fill="none"
+              stroke="#fff5f9"
+              stroke-width="4"
+              stroke-linecap="round"
+              opacity=".34"
+            />
+          </g>
+
+          <path
+            d="M100 180C88 165 20 118 20 62C20 30 45 10 72 10C87 10 96 18 100 31C104 18 113 10 128 10C155 10 180 30 180 62C180 118 112 165 100 180Z"
+            fill="url(#heart-shadow)"
+          />
+        </g>
+      </svg>
+    </div>
+
+    <section class="controls" aria-label="Heart controls">
+      <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="false">
+        Sound off
+      </button>
+    </section>
+  </main>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
