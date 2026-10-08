@@ -137,8 +137,9 @@ button {
   width: 100%;
   height: auto;
   overflow: visible;
-  translate: var(--pointer-shift-x) var(--pointer-shift-y);
-  rotate: var(--pointer-rotate-y) var(--pointer-rotate-x);
+  transform: translate3d(var(--pointer-shift-x), var(--pointer-shift-y), 0)
+    rotateX(var(--pointer-rotate-x))
+    rotateY(var(--pointer-rotate-y));
 }
 
 .heart-glow {
