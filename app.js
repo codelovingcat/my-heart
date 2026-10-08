@@ -10,6 +10,7 @@ let heartbeatTimer = null;
 let interactionTimer = null;
 let pointerFrame = null;
 let pointerInside = false;
+let waveBurstTimer = null;
 
 const BEAT_INTERVAL_MS = 1620;
 const SECOND_BEAT_DELAY_MS = 230;
@@ -213,7 +214,23 @@ function handleVisibilityChange() {
   startHeartbeatTimer();
 }
 
+function triggerWaveBurst() {
+  heartStage.classList.remove("burst");
+  void heartStage.offsetWidth;
+  heartStage.classList.add("burst");
+
+  if (waveBurstTimer !== null) {
+    window.clearTimeout(waveBurstTimer);
+  }
+
+  waveBurstTimer = window.setTimeout(() => {
+    heartStage.classList.remove("burst");
+    waveBurstTimer = null;
+  }, 700);
+}
+
 function triggerHeartInteraction() {
+  triggerWaveBurst();
   heartWrap.classList.remove("interaction-pulse");
   void heartWrap.offsetWidth;
   heartWrap.classList.add("interaction-pulse");
@@ -290,6 +307,10 @@ window.addEventListener("pagehide", () => {
 
   if (pointerFrame !== null) {
     cancelAnimationFrame(pointerFrame);
+  }
+
+  if (waveBurstTimer !== null) {
+    window.clearTimeout(waveBurstTimer);
   }
 
   if (audioContext && audioContext.state !== "closed") {

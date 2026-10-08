@@ -100,6 +100,37 @@ button {
   --pointer-rotate-y: 0deg;
 }
 
+.heartbeat-waves {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(86vmin, 900px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.heartbeat-waves span {
+  position: absolute;
+  inset: 9%;
+  display: block;
+  border: 1px solid rgba(255, 82, 135, .16);
+  border-radius: 48% 52% 50% 50% / 45% 49% 51% 55%;
+  filter: blur(.4px);
+  opacity: 0;
+  transform: scale(.5);
+  animation: heartbeat-wave 1.62s ease-out .88s infinite;
+}
+
+.heartbeat-waves span:nth-child(2) {
+  animation-delay: 1.11s;
+}
+
+.heartbeat-waves span:nth-child(3) {
+  animation-delay: 1.34s;
+}
+
 .heart-wrap {
   position: relative;
   width: min(90vmin, 980px);
@@ -254,6 +285,47 @@ button {
   }
 }
 
+@keyframes heartbeat-wave {
+  0%,
+  20% {
+    opacity: 0;
+    transform: scale(.5);
+  }
+
+  28% {
+    opacity: .34;
+  }
+
+  72% {
+    opacity: .12;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+.heart-stage.burst .heartbeat-waves span {
+  animation: heartbeat-burst .64s cubic-bezier(.16,.84,.34,1) !important;
+}
+
+@keyframes heartbeat-burst {
+  0% {
+    opacity: .02;
+    transform: scale(.42);
+  }
+
+  18% {
+    opacity: .5;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
 @keyframes halo-breathe {
   0%,
   100% {
@@ -404,6 +476,8 @@ button {
     display: none;
   }
 
+  .heartbeat-waves,
+  .heartbeat-waves span,
   .heart-wrap,
   .ambient-glow,
   .heart-glow,
