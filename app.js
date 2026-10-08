@@ -1,4 +1,5 @@
 const heartStage = document.querySelector(".heart-stage");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const soundToggle = document.querySelector("#sound-toggle");
 const heartWrap = document.querySelector(".heart-wrap");
 
@@ -13,7 +14,65 @@ requestAnimationFrame(() => {
   heartStage.classList.add("is-ready");
   heartStage.setAttribute("aria-busy", "false");
 });
+
+heartStage.addEventListener("pointerenter", () => {
+  pointerInside = true;
+});
+
+heartStage.addEventListener("pointermove", (event) => {
+  pointerInside = true;
+  applyPointerPosition(event.clientX, event.clientY);
+});
+
+heartStage.addEventListener("pointerleave", () => {
+  pointerInside = false;
+  resetPointerPosition();
+});
 const SECOND_BEAT_DELAY_MS = 230;
+let pointerFrame = null;
+let pointerInside = false;
+
+function applyPointerPosition(clientX, clientY) {
+  if (prefersReducedMotion.matches) {
+    return;
+  }
+
+  const rect = heartStage.getBoundingClientRect();
+  const relativeX = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+  const relativeY = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
+
+  const shiftX = (relativeX - 0.5) * 12;
+  const shiftY = (relativeY - 0.5) * 9;
+  const rotateX = (0.5 - relativeY) * 1.8;
+  const rotateY = (relativeX - 0.5) * 2.4;
+
+  if (pointerFrame !== null) {
+    cancelAnimationFrame(pointerFrame);
+  }
+
+  pointerFrame = requestAnimationFrame(() => {
+    heartStage.style.setProperty("--pointer-x", `${relativeX * 100}%`);
+    heartStage.style.setProperty("--pointer-y", `${relativeY * 100}%`);
+    heartStage.style.setProperty("--pointer-shift-x", `${shiftX.toFixed(2)}px`);
+    heartStage.style.setProperty("--pointer-shift-y", `${shiftY.toFixed(2)}px`);
+    heartStage.style.setProperty("--pointer-rotate-x", `${rotateX.toFixed(2)}deg`);
+    heartStage.style.setProperty("--pointer-rotate-y", `${rotateY.toFixed(2)}deg`);
+    pointerFrame = null;
+  });
+}
+
+function resetPointerPosition() {
+  if (prefersReducedMotion.matches) {
+    return;
+  }
+
+  heartStage.style.setProperty("--pointer-x", "50%");
+  heartStage.style.setProperty("--pointer-y", "50%");
+  heartStage.style.setProperty("--pointer-shift-x", "0px");
+  heartStage.style.setProperty("--pointer-shift-y", "0px");
+  heartStage.style.setProperty("--pointer-rotate-x", "0deg");
+  heartStage.style.setProperty("--pointer-rotate-y", "0deg");
+}
 
 function getAudioContext() {
   if (!audioContext) {
@@ -167,6 +226,13 @@ heartWrap.addEventListener("keydown", (event) => {
 
   event.preventDefault();
   triggerHeartInteraction();
+});
+
+window.addEventListener("blur", () => {
+  if (pointerInside) {
+    pointerInside = false;
+    resetPointerPosition();
+  }
 });
 
 window.addEventListener("pagehide", () => {

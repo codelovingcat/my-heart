@@ -91,6 +91,15 @@ button {
 .light-particles span:nth-child(9) { left: 52%; top: 18%; animation-duration: 12s; animation-delay: -10s; }
 .light-particles span:nth-child(10) { left: 47%; top: 82%; animation-duration: 8s; animation-delay: -4s; }
 
+:root {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --pointer-shift-x: 0px;
+  --pointer-shift-y: 0px;
+  --pointer-rotate-x: 0deg;
+  --pointer-rotate-y: 0deg;
+}
+
 .heart-wrap {
   position: relative;
   width: min(90vmin, 980px);
@@ -101,11 +110,36 @@ button {
   will-change: transform, filter;
 }
 
+.pointer-glow {
+  position: absolute;
+  left: var(--pointer-x);
+  top: var(--pointer-y);
+  width: 42%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 245, 250, .2) 0%,
+    rgba(255, 113, 157, .1) 28%,
+    rgba(255, 49, 111, 0) 72%
+  );
+  transform: translate(-50%, -50%);
+  filter: blur(24px);
+  opacity: .8;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transition: left .35s ease-out, top .35s ease-out, opacity .35s ease-out;
+  z-index: 0;
+}
+
 .heart-svg {
   display: block;
   width: 100%;
   height: auto;
   overflow: visible;
+  transform: translate3d(var(--pointer-shift-x), var(--pointer-shift-y), 0)
+    rotateX(var(--pointer-rotate-x))
+    rotateY(var(--pointer-rotate-y));
 }
 
 .heart-glow {
@@ -122,6 +156,13 @@ button {
 
 .heart-wrap.interaction-pulse .heart-svg {
   animation: interaction-pulse .46s cubic-bezier(.16,.84,.34,1);
+}
+
+@media (hover: none) {
+  .pointer-glow {
+    transition: opacity .45s ease;
+    opacity: .55;
+  }
 }
 
 .heart-wrap::after {
@@ -201,21 +242,21 @@ button {
 
 @keyframes interaction-pulse {
   0% {
-    transform: scale(1);
+    scale: 1;
     filter: brightness(1);
   }
 
   28% {
-    transform: scale(1.045);
+    scale: 1.045;
     filter: brightness(1.08) saturate(1.08);
   }
 
   52% {
-    transform: scale(1.015);
+    scale: 1.015;
   }
 
   100% {
-    transform: scale(1);
+    scale: 1;
     filter: brightness(1);
   }
 }
@@ -302,6 +343,10 @@ button {
     width: min(94vmin, 620px);
   }
 
+  .pointer-glow {
+    width: 56%;
+  }
+
   .controls {
     bottom: .8rem;
   }
@@ -311,6 +356,10 @@ button {
   .heart-stage {
     opacity: 1;
     transition: none;
+  }
+
+  .pointer-glow {
+    display: none;
   }
 
   .heart-wrap,
