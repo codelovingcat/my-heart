@@ -14,7 +14,7 @@ let waveBurstTimer = null;
 
 const BEAT_INTERVAL_MS = 1620;
 const SECOND_BEAT_DELAY_MS = 230;
-const MASTER_VOLUME = 0.72;
+const MASTER_VOLUME = 0.68;
 
 requestAnimationFrame(() => {
   heartStage.classList.add("is-ready");
@@ -87,7 +87,7 @@ function createNoiseBuffer(context, duration = 0.18) {
   return buffer;
 }
 
-function playThump(startTime, frequency, gainValue, duration) {
+function playThump(startTime, frequency, gainValue, duration, bodyFrequency, bodyGain) {
   const context = getAudioContext();
 
   const oscillator = context.createOscillator();
@@ -95,17 +95,17 @@ function playThump(startTime, frequency, gainValue, duration) {
   const oscillatorFilter = context.createBiquadFilter();
 
   oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(frequency * 1.45, startTime);
-  oscillator.frequency.exponentialRampToValueAtTime(frequency, startTime + 0.03);
-  oscillator.frequency.exponentialRampToValueAtTime(Math.max(34, frequency * 0.58), startTime + duration);
+  oscillator.frequency.setValueAtTime(frequency * 1.55, startTime);
+  oscillator.frequency.exponentialRampToValueAtTime(frequency, startTime + 0.026);
+  oscillator.frequency.exponentialRampToValueAtTime(Math.max(31, frequency * 0.5), startTime + duration);
 
   oscillatorFilter.type = "lowpass";
-  oscillatorFilter.frequency.setValueAtTime(170, startTime);
-  oscillatorFilter.Q.setValueAtTime(0.8, startTime);
+  oscillatorFilter.frequency.setValueAtTime(210, startTime);
+  oscillatorFilter.Q.setValueAtTime(0.9, startTime);
 
   oscillatorGain.gain.setValueAtTime(0.0001, startTime);
-  oscillatorGain.gain.exponentialRampToValueAtTime(gainValue, startTime + 0.012);
-  oscillatorGain.gain.exponentialRampToValueAtTime(gainValue * 0.18, startTime + duration * 0.45);
+  oscillatorGain.gain.exponentialRampToValueAtTime(gainValue, startTime + 0.009);
+  oscillatorGain.gain.exponentialRampToValueAtTime(gainValue * 0.22, startTime + duration * 0.4);
   oscillatorGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
   oscillator.connect(oscillatorFilter);
@@ -115,25 +115,50 @@ function playThump(startTime, frequency, gainValue, duration) {
   oscillator.start(startTime);
   oscillator.stop(startTime + duration + 0.03);
 
+  const bodyOscillator = context.createOscillator();
+  const bodyGainNode = context.createGain();
+  const bodyFilter = context.createBiquadFilter();
+
+  bodyOscillator.type = "sine";
+  bodyOscillator.frequency.setValueAtTime(bodyFrequency * 1.2, startTime);
+  bodyOscillator.frequency.exponentialRampToValueAtTime(bodyFrequency, startTime + 0.045);
+  bodyOscillator.frequency.exponentialRampToValueAtTime(Math.max(24, bodyFrequency * 0.62), startTime + duration * 1.15);
+
+  bodyFilter.type = "lowpass";
+  bodyFilter.frequency.setValueAtTime(115, startTime);
+  bodyFilter.Q.setValueAtTime(0.55, startTime);
+
+  bodyGainNode.gain.setValueAtTime(0.0001, startTime);
+  bodyGainNode.gain.exponentialRampToValueAtTime(bodyGain, startTime + 0.016);
+  bodyGainNode.gain.exponentialRampToValueAtTime(bodyGain * 0.16, startTime + duration * 0.5);
+  bodyGainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration * 1.15);
+
+  bodyOscillator.connect(bodyFilter);
+  bodyFilter.connect(bodyGainNode);
+  bodyGainNode.connect(masterGain);
+
+  bodyOscillator.start(startTime);
+  bodyOscillator.stop(startTime + duration * 1.15 + 0.03);
+
   const noise = context.createBufferSource();
   const noiseFilter = context.createBiquadFilter();
   const noiseGain = context.createGain();
 
-  noise.buffer = createNoiseBuffer(context);
+  noise.buffer = createNoiseBuffer(context, 0.12);
   noiseFilter.type = "lowpass";
-  noiseFilter.frequency.setValueAtTime(230, startTime);
-  noiseFilter.Q.setValueAtTime(0.6, startTime);
+  noiseFilter.frequency.setValueAtTime(320, startTime);
+  noiseFilter.Q.setValueAtTime(0.5, startTime);
 
   noiseGain.gain.setValueAtTime(0.0001, startTime);
-  noiseGain.gain.exponentialRampToValueAtTime(gainValue * 0.34, startTime + 0.008);
-  noiseGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+  noiseGain.gain.exponentialRampToValueAtTime(gainValue * 0.22, startTime + 0.006);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.12);
 
   noise.connect(noiseFilter);
   noiseFilter.connect(noiseGain);
   noiseGain.connect(masterGain);
 
   noise.start(startTime);
-  noise.stop(startTime + duration + 0.01);
+  noise.stop(startTime + 0.14);
 }
 
 function playHeartbeat() {
@@ -142,8 +167,8 @@ function playHeartbeat() {
   }
 
   const start = audioContext.currentTime + 0.01;
-  playThump(start, 70, 0.11, 0.24);
-  playThump(start + SECOND_BEAT_DELAY_MS / 1000, 55, 0.082, 0.27);
+  playThump(start, 74, 0.115, 0.22, 44, 0.055);
+  playThump(start + SECOND_BEAT_DELAY_MS / 1000, 58, 0.086, 0.25, 36, 0.044);
 }
 
 function startHeartbeatTimer() {
