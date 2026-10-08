@@ -306,7 +306,7 @@ button {
   }
 }
 
-.heartbeat-waves.burst span {
+.heart-stage.burst .heartbeat-waves span {
   animation: heartbeat-burst .64s cubic-bezier(.16,.84,.34,1) !important;
 }
 
