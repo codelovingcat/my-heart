@@ -31,6 +31,20 @@ button {
   font: inherit;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 42, 112, .035), transparent 34%),
+    radial-gradient(circle at 50% 52%, rgba(255, 87, 139, .025), transparent 58%);
+  opacity: .7;
+  transform: scale(.96);
+  animation: environment-breathe 1.62s ease-in-out .88s infinite;
+}
+
 .heart-stage {
   position: relative;
   min-height: 100vh;
@@ -285,6 +299,34 @@ button {
   }
 }
 
+@keyframes environment-breathe {
+  0%,
+  100% {
+    opacity: .5;
+    transform: scale(.96);
+  }
+
+  7% {
+    opacity: .68;
+    transform: scale(1.01);
+  }
+
+  13% {
+    opacity: .53;
+    transform: scale(.97);
+  }
+
+  20% {
+    opacity: .78;
+    transform: scale(1.025);
+  }
+
+  29% {
+    opacity: .53;
+    transform: scale(.97);
+  }
+}
+
 @keyframes heartbeat-wave {
   0%,
   20% {
@@ -470,6 +512,10 @@ button {
   .heart-stage {
     opacity: 1;
     transition: none;
+  }
+
+  body::before {
+    animation: none;
   }
 
   .pointer-glow {
