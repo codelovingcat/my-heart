@@ -4,33 +4,21 @@ const soundToggle = document.querySelector("#sound-toggle");
 const heartWrap = document.querySelector(".heart-wrap");
 
 let audioContext = null;
+let masterGain = null;
 let soundEnabled = false;
 let heartbeatTimer = null;
 let interactionTimer = null;
+let pointerFrame = null;
+let pointerInside = false;
 
 const BEAT_INTERVAL_MS = 1620;
+const SECOND_BEAT_DELAY_MS = 230;
+const MASTER_VOLUME = 0.72;
 
 requestAnimationFrame(() => {
   heartStage.classList.add("is-ready");
   heartStage.setAttribute("aria-busy", "false");
 });
-
-heartStage.addEventListener("pointerenter", () => {
-  pointerInside = true;
-});
-
-heartStage.addEventListener("pointermove", (event) => {
-  pointerInside = true;
-  applyPointerPosition(event.clientX, event.clientY);
-});
-
-heartStage.addEventListener("pointerleave", () => {
-  pointerInside = false;
-  resetPointerPosition();
-});
-const SECOND_BEAT_DELAY_MS = 230;
-let pointerFrame = null;
-let pointerInside = false;
 
 function applyPointerPosition(clientX, clientY) {
   if (prefersReducedMotion.matches) {
@@ -77,6 +65,9 @@ function resetPointerPosition() {
 function getAudioContext() {
   if (!audioContext) {
     audioContext = new AudioContext();
+    masterGain = audioContext.createGain();
+    masterGain.gain.value = MASTER_VOLUME;
+    masterGain.connect(audioContext.destination);
   }
 
   return audioContext;
@@ -118,7 +109,7 @@ function playThump(startTime, frequency, gainValue, duration) {
 
   oscillator.connect(oscillatorFilter);
   oscillatorFilter.connect(oscillatorGain);
-  oscillatorGain.connect(context.destination);
+  oscillatorGain.connect(masterGain);
 
   oscillator.start(startTime);
   oscillator.stop(startTime + duration + 0.03);
@@ -138,14 +129,14 @@ function playThump(startTime, frequency, gainValue, duration) {
 
   noise.connect(noiseFilter);
   noiseFilter.connect(noiseGain);
-  noiseGain.connect(context.destination);
+  noiseGain.connect(masterGain);
 
   noise.start(startTime);
   noise.stop(startTime + duration + 0.01);
 }
 
-function playHeartbeat(force = false) {
-  if ((!soundEnabled && !force) || !audioContext) {
+function playHeartbeat() {
+  if (!soundEnabled || !audioContext || document.hidden) {
     return;
   }
 
@@ -154,24 +145,29 @@ function playHeartbeat(force = false) {
   playThump(start + SECOND_BEAT_DELAY_MS / 1000, 55, 0.082, 0.27);
 }
 
-function startHeartbeatSound() {
+function startHeartbeatTimer() {
+  if (!soundEnabled || document.hidden || heartbeatTimer !== null) {
+    return;
+  }
+
+  heartbeatTimer = window.setInterval(playHeartbeat, BEAT_INTERVAL_MS);
+}
+
+async function startHeartbeatSound() {
   const context = getAudioContext();
 
   if (context.state === "suspended") {
-    void context.resume();
+    await context.resume();
   }
 
   soundEnabled = true;
   soundToggle.setAttribute("aria-pressed", "true");
   soundToggle.textContent = "Sound on";
 
-  playHeartbeat();
-
-  if (heartbeatTimer !== null) {
-    window.clearInterval(heartbeatTimer);
+  if (!document.hidden) {
+    playHeartbeat();
+    startHeartbeatTimer();
   }
-
-  heartbeatTimer = window.setInterval(playHeartbeat, BEAT_INTERVAL_MS);
 }
 
 function stopHeartbeatSound() {
@@ -183,6 +179,38 @@ function stopHeartbeatSound() {
     window.clearInterval(heartbeatTimer);
     heartbeatTimer = null;
   }
+}
+
+function handleVisibilityChange() {
+  if (!soundEnabled || !audioContext) {
+    return;
+  }
+
+  if (document.hidden) {
+    if (heartbeatTimer !== null) {
+      window.clearInterval(heartbeatTimer);
+      heartbeatTimer = null;
+    }
+
+    if (audioContext.state === "running") {
+      void audioContext.suspend();
+    }
+
+    return;
+  }
+
+  if (audioContext.state === "suspended") {
+    void audioContext.resume().then(() => {
+      if (soundEnabled) {
+        playHeartbeat();
+        startHeartbeatTimer();
+      }
+    });
+    return;
+  }
+
+  playHeartbeat();
+  startHeartbeatTimer();
 }
 
 function triggerHeartInteraction() {
@@ -199,7 +227,7 @@ function triggerHeartInteraction() {
     interactionTimer = null;
   }, 500);
 
-  if (soundEnabled && audioContext) {
+  if (soundEnabled && audioContext && !document.hidden) {
     playHeartbeat();
   }
 }
@@ -210,7 +238,7 @@ soundToggle.addEventListener("click", () => {
     return;
   }
 
-  startHeartbeatSound();
+  void startHeartbeatSound();
 });
 
 heartWrap.addEventListener("click", (event) => {
@@ -228,12 +256,28 @@ heartWrap.addEventListener("keydown", (event) => {
   triggerHeartInteraction();
 });
 
+heartStage.addEventListener("pointerenter", () => {
+  pointerInside = true;
+});
+
+heartStage.addEventListener("pointermove", (event) => {
+  pointerInside = true;
+  applyPointerPosition(event.clientX, event.clientY);
+});
+
+heartStage.addEventListener("pointerleave", () => {
+  pointerInside = false;
+  resetPointerPosition();
+});
+
 window.addEventListener("blur", () => {
   if (pointerInside) {
     pointerInside = false;
     resetPointerPosition();
   }
 });
+
+document.addEventListener("visibilitychange", handleVisibilityChange);
 
 window.addEventListener("pagehide", () => {
   if (heartbeatTimer !== null) {
@@ -242,6 +286,10 @@ window.addEventListener("pagehide", () => {
 
   if (interactionTimer !== null) {
     window.clearTimeout(interactionTimer);
+  }
+
+  if (pointerFrame !== null) {
+    cancelAnimationFrame(pointerFrame);
   }
 
   if (audioContext && audioContext.state !== "closed") {
