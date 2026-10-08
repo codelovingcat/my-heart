@@ -165,6 +165,20 @@ button {
   }
 }
 
+.heart-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 5%;
+  border: 1px solid rgba(255, 115, 158, .14);
+  border-radius: 49% 51% 50% 50% / 44% 47% 53% 56%;
+  filter: blur(1px);
+  opacity: .36;
+  transform: scale(.98);
+  pointer-events: none;
+  z-index: -1;
+  animation: halo-breathe 1.62s ease-in-out .88s infinite;
+}
+
 .heart-wrap::after {
   content: "";
   position: absolute;
@@ -237,6 +251,34 @@ button {
 
   29% {
     transform: scale(1);
+  }
+}
+
+@keyframes halo-breathe {
+  0%,
+  100% {
+    opacity: .26;
+    transform: scale(.985);
+  }
+
+  7% {
+    opacity: .42;
+    transform: scale(1.015);
+  }
+
+  13% {
+    opacity: .28;
+    transform: scale(.99);
+  }
+
+  20% {
+    opacity: .48;
+    transform: scale(1.03);
+  }
+
+  29% {
+    opacity: .28;
+    transform: scale(.99);
   }
 }
 
@@ -365,7 +407,8 @@ button {
   .heart-wrap,
   .ambient-glow,
   .heart-glow,
-  .light-particles span {
+  .light-particles span,
+  .heart-wrap::before {
 
     animation: none;
   }
